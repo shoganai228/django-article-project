@@ -10,18 +10,18 @@ def article_list(request):
     return render(request, 'articles/index.html', {'articles': articles})
 
 @login_required
+@login_required
 def like_article(request, pk):
     article = get_object_or_404(Article, pk=pk)
     if request.user in article.likes.all():
         article.likes.remove(request.user)
-        liked = False
     else:
         article.likes.add(request.user)
-        liked = True
 
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return JsonResponse({'liked': liked, 'likes_count': article.likes.count()})
-    
+    # Если запрос отправлен через HTMX
+    if request.headers.get('HX-Request'):
+        return render(request, 'articles/includes/like_button.html', {'article': article, 'user': request.user})
+
     return redirect(request.META.get('HTTP_REFERER', 'article_list'))
 
 @login_required

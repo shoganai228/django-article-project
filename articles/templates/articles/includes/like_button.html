@@ -1,0 +1,16 @@
+<div id="like-section-{{ article.pk }}">
+    <div class="meta likes-count">Лайков: {{ article.likes.count }}</div>
+    
+    {% if user.is_authenticated %}
+        <form hx-post="{% url 'like_article' article.pk %}"
+              hx-target="#like-section-{{ article.pk }}"
+              hx-swap="outerHTML">
+            {% csrf_token %}
+            {% if request.user in article.likes.all %}
+                <button type="submit" class="btn btn-unlike">Убрать лайк</button>
+            {% else %}
+                <button type="submit" class="btn">Поставить лайк</button>
+            {% endif %}
+        </form>
+    {% endif %}
+</div>
